@@ -1,8 +1,15 @@
 var fs = require("fs");
 var pb = require('protocol-buffers');
 var dt = require('date-and-time');
-var sha256 = require("js-sha256")
+var sha256 = require("js-sha256");
 
+/** checkDir
+ * [Function that creates directory if it does not exist]
+ * 
+ * @param {string} dir (required)
+ * 
+ * @return void
+ */
 function checkDir(dir){
     if (!fs.existsSync(dir)){
         fs.mkdirSync(dir, { recursive: true });
@@ -16,13 +23,13 @@ function checkDir(dir){
  * @param {string} format (optional, default='MM DD YYYY HH:mm:SSS [GMT]Z')
  * @param {float}  lat (optional, default=0)
  * @param {float}  lon (optional, default=0)
- * @param {float}  x (optional, default=0)
+ * @param {float}  x (optional,  default=0)
  * @param {float}  y (optional, default=0)
  * @param {float}  z (optional, default=0)
  * 
  * @return {string} moment_buffer
  */
-function moment(datetime = "01 01 1970 00:00:00 GMT-0800", format = 'MM DD YYYY HH:mm:SSS [GMT]Z', lat = 0, lon = 0, x = 0, y = 0, z = 0) {
+function moment(datetime, format, lat, lon, x, y, z) {
     // let moment_pb = require('node_modules/proto/moment.proto')
     var moment_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/moment.proto'))
     

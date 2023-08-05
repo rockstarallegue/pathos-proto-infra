@@ -1,7 +1,10 @@
-const make = require("./maker");
+const maker = require("./maker");
+const getter = require("./getter");
 
 const event = new Date(Date.now());
-const current_datetime = event.toString().split(" (")[0]
+const split_datetime = event.toString().split(" (")[0].split(" ")
+const current_datetime = split_datetime[1]  + " " + split_datetime[2] + " " + split_datetime[3] + " " + split_datetime[4] + " " + split_datetime[5]; 
+
 
 /** hello
  * [Function that greets someone who is calling the function]
@@ -28,8 +31,19 @@ exports.hello = (name = "nameless entity") => {
  * 
  * @return {string} moment_buffer
  */
-exports.makeMoment = (datetime = current_datetime, format = "ddd MMM DD YYYY HH:mm:ss [GMT]Z", lat = 0, lon = 0, x = 0, y = 0, z = 0) => {
-    const moment_buffer = make.moment(datetime, lat, lon, x, y, z, format)
-    console.log("-> Moment buffer path: moments/", moment_buffer)
+exports.makeMoment = (datetime = current_datetime, format = "MMM DD YYYY HH:mm:ss [GMT]Z", lat = 0, lon = 0, x = 0, y = 0, z = 0) => {
+    const moment_buffer = maker.moment(datetime, format, lat, lon, x, y, z)
     return moment_buffer
+}
+
+/** getMomentObj
+ * [Function that recieves a moment hash and returns the moment object]
+ * 
+ * @param {string} xmoment (required)
+ * 
+ * @return {obj} moment_object
+ */
+exports.getMomentObj = (xmoment) => {
+    const moment_object = getter.getMomentObj(xmoment);
+    return moment_object;
 }
