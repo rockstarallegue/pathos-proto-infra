@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+message moment {
+    message space {
+        message position {
+            optional double x = 1;
+            optional double y = 2;
+            optional double z = 3;
+        }
+
+        optional float lat = 1;
+        optional float lon = 2;
+        optional position xyz = 3;
+    }
+
+    message time {
+        optional int32 Y = 1;
+        optional int32 M = 2;
+        optional int32 D = 3;
+        optional int32 H = 4;
+        optional int32 A = 5;
+        optional int32 h = 6;
+        optional int32 m = 7;
+        optional int32 s = 8;
+        optional int32 S = 9;
+        optional int32 Z = 10;
+        optional int32 _index = 11;
+        optional int32 _length = 12;
+        optional int32 _match = 13;
+    }
+
+    optional space coordinates = 1;
+    optional time datetime = 2;
+}
