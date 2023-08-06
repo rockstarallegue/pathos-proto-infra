@@ -1,6 +1,6 @@
 {
   "name": "pathos-proto-infra",
-  "version": "1.0.16",
+  "version": "1.0.24",
   "dependencies": {
     "date-and-time": "^3.0.2",
     "fs": "^0.0.1-security",
