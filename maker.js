@@ -19,13 +19,13 @@ function checkDir(dir){
 /** moment
  * [Moment Protocol Buffer Creation]
  * 
- * @param {string} datetime (optional, default='01 01 1970 00:00:00 GMT-0800')
- * @param {string} format (optional, default='MM DD YYYY HH:mm:SSS [GMT]Z')
- * @param {float}  lat (optional, default=0)
- * @param {float}  lon (optional, default=0)
- * @param {float}  x (optional,  default=0)
- * @param {float}  y (optional, default=0)
- * @param {float}  z (optional, default=0)
+ * @param {string} datetime (optional)
+ * @param {string} format   (optional)
+ * @param {float}  lat      (optional)
+ * @param {float}  lon      (optional)
+ * @param {float}  x        (optional)
+ * @param {float}  y        (optional)
+ * @param {float}  z        (optional)
  * 
  * @return {string} moment_buffer
  */
@@ -69,4 +69,50 @@ function moment(datetime, format, lat, lon, x, y, z) {
     return moment_hash;
 }
 
-module.exports = { moment };
+
+/** moment
+ * [Moment Protocol Buffer Creation]
+ * 
+ * @param {string} datetime (required)
+ * @param {string} format   (required)
+ * 
+ * @return {string} pioneer_buffer
+ */
+function pioneer(xbirthday, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
+    // CREATING PIONEER
+    var user = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/user.proto'))
+    
+    var register = new Date()
+    register = dt.format(register, dt.compile(format, true));
+
+    var register_moment = moment(register, format, 0, 0, 0, 0, 0)
+
+    var birthday = dt.parse(xbirthday, format, true);
+    birthday = dt.format(birthday, format, true);
+
+    var birthday_moment = moment(birthday, format, 0, 0, 0, 0, 0)
+
+    // console.log("PIONEER REGISTER MOMENT: ", register_moment)
+    // console.log("PIONEER BIRTHDAY MOMENT: ", birthday_moment)
+
+    var pioneer_hash = sha256(register_moment + "_" + birthday_moment);
+
+    var buffer = user.user.encode({
+        birthday: "moments/"+birthday_moment,
+        register: "moments/"+register_moment,
+        invite: "users/"+pioneer_hash, // points to itself as inviting user in the chain
+        tag: "users/"+pioneer_hash,
+    })
+
+    // Save as active user
+    checkDir("files/users/")
+    fs.writeFileSync("files/users/" + pioneer_hash, buffer);
+
+    // Save pioneer to look for it later
+    checkDir("files/pioneer/")
+    fs.writeFileSync("files/pioneer/" + pioneer_hash, buffer);
+
+    return pioneer_hash
+}
+
+module.exports = { moment, pioneer };

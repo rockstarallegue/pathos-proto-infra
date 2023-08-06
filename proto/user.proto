@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+message user {
+    required string birthday = 1;
+    required string register = 2;
+    required string invite = 3;
+    required string tag = 4;
+}
