@@ -154,13 +154,18 @@ Using a secret by setting its 'used' property to true if it is set to false.
 
 Creating a secret, calling `useSecret(xsecret)` and printing used secret object:
 ```javascript
+// Creating secret
 const secret = pathos.makeSecret();
 console.log("SECRET BUFFER: ", secret)
 
+// Getting secret object and printing it
 const secret_obj = pathos.getSecretObj(secret);
 console.log("SECRET OBJECT: ", secret_obj)
 
+// Using secret!
 const used_secret = pathos.useSecret(secret)
+
+// Getting secret object and printing it
 const usecret_obj = pathos.getSecretObj(used_secret);
 console.log("USED SECRET OBJECT: ", usecret_obj)
 ```
