@@ -2,19 +2,8 @@ var fs = require("fs");
 var pb = require('protocol-buffers');
 var dt = require('date-and-time');
 var sha256 = require("js-sha256");
-
-/** checkDir
- * [Function that creates directory if it does not exist]
- * 
- * @param {string} dir (required)
- * 
- * @return void
- */
-function checkDir(dir){
-    if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir, { recursive: true });
-    }
-}
+const getter = require("./getter");
+const checker = require("./checker");
 
 /** moment
  * [Moment Protocol Buffer Creation]
@@ -63,56 +52,99 @@ function moment(datetime, format, lat, lon, x, y, z) {
     var moment_hash = sha256(JSON.stringify(moment_pb.moment.decode(buffer)));
     // console.log(" -> Moment hash: ", moment_hash)
 
-    checkDir("files/moments/")
+    checker.checkDir("files/moments/")
     fs.writeFileSync("files/moments/" + moment_hash, buffer);
 
     return moment_hash;
 }
 
 
-/** moment
- * [Moment Protocol Buffer Creation]
+/** pioneer
+ * [Pioneer Protocol Buffer Creation]
  * 
  * @param {string} datetime (required)
  * @param {string} format   (required)
  * 
  * @return {string} pioneer_buffer
  */
-function pioneer(xbirthday, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
-    // CREATING PIONEER
-    var user = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/user.proto'))
-    
+function pioneer(xbigbang = getter.getCurrentDate(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
+    checker.checkDir("files/users/")
+    if(checker.checkEmptyDir("files/users/")){
+        // CREATING PIONEER
+        var user = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/user.proto'))
+        
+        var register = new Date()
+        register = dt.format(register, dt.compile(format, true));
+
+        var register_moment = moment(register, format, 0, 0, 0, 0, 0)
+
+        var birthday = dt.parse(xbigbang, format, true);
+        birthday = dt.format(birthday, format, true);
+
+        var birthday_moment = moment(birthday, format, 0, 0, 0, 0, 0)
+
+        // console.log("PIONEER REGISTER MOMENT: ", register_moment)
+        // console.log("PIONEER BIRTHDAY MOMENT: ", birthday_moment)
+
+        var pioneer_hash = sha256(register_moment + "_" + birthday_moment);
+
+        var buffer = user.user.encode({
+            birthday: "moments/"+birthday_moment,
+            register: "moments/"+register_moment,
+            invite: "users/"+pioneer_hash, // points to itself as inviting user in the chain
+            tag: "users/"+pioneer_hash,
+        })
+
+        // Save as active user
+        checker.checkDir("files/users/")
+        fs.writeFileSync("files/users/" + pioneer_hash, buffer);
+
+        // Save pioneer to look for it later
+        checker.checkDir("files/pioneer/")
+        fs.writeFileSync("files/pioneer/" + pioneer_hash, buffer);
+
+        return pioneer_hash
+    }
+    else{
+        return checker.checkFiles('files/pioneer/')[0];
+    }
+
+    return "Pioneer has failed:(";
+}
+
+/** secret
+ * [Pioneer Protocol Buffer Creation]
+ * 
+ * @param {string} author (optional, default=pioneer_hash)
+ * @param {string} format   (required)
+ * 
+ * @return {string} secret_hash
+ */
+function secret(author = pioneer(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
+    var secret_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/secret.proto'))
+
     var register = new Date()
     register = dt.format(register, dt.compile(format, true));
 
     var register_moment = moment(register, format, 0, 0, 0, 0, 0)
+    
+    // console.log("SECRET AUTHOR: ", author);
+    // console.log("SECRET REGISTER MOMENT: ", register_moment);
 
-    var birthday = dt.parse(xbirthday, format, true);
-    birthday = dt.format(birthday, format, true);
-
-    var birthday_moment = moment(birthday, format, 0, 0, 0, 0, 0)
-
-    // console.log("PIONEER REGISTER MOMENT: ", register_moment)
-    // console.log("PIONEER BIRTHDAY MOMENT: ", birthday_moment)
-
-    var pioneer_hash = sha256(register_moment + "_" + birthday_moment);
-
-    var buffer = user.user.encode({
-        birthday: "moments/"+birthday_moment,
+    var secret_hash = sha256(register_moment + "_" + author);
+    
+    var buffer = secret_pb.secret.encode({
         register: "moments/"+register_moment,
-        invite: "users/"+pioneer_hash, // points to itself as inviting user in the chain
-        tag: "users/"+pioneer_hash,
+        author: author,
+        used: false,
+        tag: "secrets/"+secret_hash,
     })
 
-    // Save as active user
-    checkDir("files/users/")
-    fs.writeFileSync("files/users/" + pioneer_hash, buffer);
-
-    // Save pioneer to look for it later
-    checkDir("files/pioneer/")
-    fs.writeFileSync("files/pioneer/" + pioneer_hash, buffer);
-
-    return pioneer_hash
+    checker.checkDir("files/secrets/") // checking
+    fs.writeFileSync("files/secrets/" + secret_hash, buffer);
+    
+    return secret_hash;
 }
 
-module.exports = { moment, pioneer };
+
+module.exports = { moment, pioneer, secret };

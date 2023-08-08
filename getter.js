@@ -1,5 +1,18 @@
 var fs = require("fs");
 var pb = require('protocol-buffers');
+var dt = require('date-and-time');
+
+/** getCurrentDate
+ * [Function that returns current datetime string on "MMM DD YYYY HH:mm:ss [GMT]Z" format]
+ * 
+ * @return {string} current_datetime
+ */
+function getCurrentDate(format = 'MM DD YYYY HH:mm:SSS [GMT]Z'){
+    var current_datetime = new Date()
+    current_datetime = dt.format(current_datetime, dt.compile(format, true));
+
+    return current_datetime;
+}
 
 /** getMomentObj
  * [Function that recieves a moment hash and returns the moment object]
@@ -72,4 +85,39 @@ function getPioneerObj(xpioneer) {
     return pioneer_obj;
 }
 
-module.exports = { getMomentObj, getPioneerObj };
+/** getSecretObj
+ * [Function that recieves a secret hash and returns the secret object]
+ * 
+ * @param {string} xsecret (required)
+ * 
+ * @return void
+ */
+function getSecretObj(xsecret) {
+    // "secret/hash" FORMAT EXCEPTION
+    if(xsecret.split("/").length > 1){ 
+        xsecret = xsecret.split("/")[1]
+    }
+
+    // LOADING PB
+    var secret_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/secret.proto'))
+    
+    // NOT FOUND EXCEPTION
+    var fileContents;
+    try {
+        fileContents = fs.readFileSync("files/secrets/"+xsecret);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return "Secret not found :(";
+        } else {
+            throw err;
+        }
+    }
+
+    // DECODING SECRET
+    var secret_enc = fileContents
+    var secret_obj = secret_pb.secret.decode(secret_enc)
+
+    return secret_obj;
+}
+
+module.exports = { getCurrentDate, getMomentObj, getPioneerObj, getSecretObj };

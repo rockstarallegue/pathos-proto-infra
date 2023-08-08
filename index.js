@@ -1,14 +1,6 @@
 const maker = require("./maker");
 const getter = require("./getter");
-
-function getCurrentDate(){
-    const event = new Date(Date.now());
-    const split_datetime = event.toString().split(" (")[0].split(" ")
-    const current_datetime = split_datetime[1]  + " " + split_datetime[2] + " " + split_datetime[3] + " " + split_datetime[4] + " " + split_datetime[5];
-
-    return current_datetime;
-}
-
+const updater = require("./updater");
 
 /** hello
  * [Function that greets someone who is calling the function]
@@ -35,7 +27,7 @@ exports.hello = (name = "nameless entity") => {
  * 
  * @return {string} moment_buffer
  */
-exports.makeMoment = (datetime = getCurrentDate(), format = "MMM DD YYYY HH:mm:ss [GMT]Z", lat = 0, lon = 0, x = 0, y = 0, z = 0) => {
+exports.makeMoment = (datetime = getter.getCurrentDate(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z', lat = 0, lon = 0, x = 0, y = 0, z = 0) => {
     const moment_buffer = maker.moment(datetime, format, lat, lon, x, y, z)
     return moment_buffer
 }
@@ -57,7 +49,7 @@ exports.getMomentObj = (xmoment) => {
  * 
  * @return {string} moment_buffer
  */
-exports.makePioneer = (datetime = getCurrentDate(), format = "MMM DD YYYY HH:mm:SSS [GMT]Z") => {
+exports.makePioneer = (datetime = getter.getCurrentDate(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
     const pioneer_buffer = maker.pioneer(datetime, format)
     return pioneer_buffer
 }
@@ -72,4 +64,36 @@ exports.makePioneer = (datetime = getCurrentDate(), format = "MMM DD YYYY HH:mm:
 exports.getPioneerObj = (xpioneer) => {
     const pioneer_object = getter.getPioneerObj(xpioneer);
     return pioneer_object;
+}
+
+/** makeSecret
+ * [Secret maker]
+ * 
+ * @return {string} secret_buffer
+ */
+exports.makeSecret = (author = "pioneer/"+maker.pioneer(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
+    const secret_buffer = maker.secret(author, format)
+    return secret_buffer
+}
+
+/** useSecret
+ * [Secret using]
+ * 
+ * @return {string} secret_buffer
+ */
+exports.useSecret = (xsecret) => {
+    const secret_buffer = updater.useSecret(xsecret)
+    return secret_buffer
+}
+
+/** getSecretObj
+ * [Function that recieves a moment hash and returns the moment object]
+ * 
+ * @param {string} xsecret (required)
+ * 
+ * @return {obj} secret_object (user object)
+ */
+exports.getSecretObj = (xsecret) => {
+    const secret_object = getter.getSecretObj(xsecret);
+    return secret_object;
 }
