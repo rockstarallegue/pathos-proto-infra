@@ -13,7 +13,8 @@ Recieve data to encode it within pathos file structure and returns the Protocol 
 | Function                 | Parameters                              |
 | ------------------------ | --------------------------------------- |
 | makeMoment               | datetime, format, lat, lon, x, y, z     |
-| makePioneer              | birthday, format     |
+| makePioneer              | birthday, format                        |
+| makeSecret               | author, format                          |
 
 
 ## Decoders
@@ -22,7 +23,16 @@ Recieve hashes and returns useful data objects
 | Function                 | Parameters                              |
 | ------------------------ | --------------------------------------- |
 | getMomentObj             | xmoment (moment hash)                   |
-| getPioneerObj            | xpioneer (moment hash)                  |
+| getPioneerObj            | xpioneer (pioneer hash)                 |
+| getSecretObj             | xsecret (secret hash)                   |
+
+
+## Modifiers
+Modify objects
+
+| Function                 | Parameters                              | Description                                          |
+| ------------------------ | --------------------------------------- | ---------------------------------------------------- |
+| useSecret                | xsecret (secret hash)                   | sets 'used' secret property to true if it is false.  |
 
 
 ## Usage
@@ -83,6 +93,7 @@ MOMENT OBJECT:  {
 }
 ```
 
+
 ### getPioneerObj(xpioneer)
 Getting a pioneer object by it's hashname
 
@@ -101,3 +112,73 @@ PIONEER OBJECT:  {
   tag: 'users/ffe125f1827ca16374ac5ea8d69defeee4b2ff8a9f8d640fa27c495881fe93b4'
 }
 ```
+
+
+### makeSecret(author, format)
+Making a secret involves tracking the secret's author. Pioneer user is set by default if author is not provided. Pioneer is created automatically if it does not exist.
+
+Calling `makeSecret()`:
+```javascript
+const secret = pathos.makeSecret();
+console.log("SECRET BUFFER: ", secret)
+```
+
+Console log:
+```
+SECRET BUFFER:  574e8fee76ba4dc93c2f4cd79399aa01e6cfb19257e4eb305dcfaeb16649b7bf
+```
+
+
+### getSecretObj(xsecret)
+Getting a secret object by it's hashname
+
+Calling `getSecretObj()`:
+```javascript
+const secret_obj = pathos.getSecretObj(secret);
+console.log("SECRET OBJECT: ", secret_obj);
+```
+
+Console log:
+```
+SECRET OBJECT:  {
+  register: 'moments/638976edf4684e746f9bd013bd2e9145b1316ee42b40b0877185f6aeda960b8d',
+  author: 'pioneer/ebd4ff7e4f69d1c4c2b529eb60a7ca72bb459c1458e1a011b26b6ea84901d143',
+  used: false,
+  tag: 'secrets/574e8fee76ba4dc93c2f4cd79399aa01e6cfb19257e4eb305dcfaeb16649b7bf'
+}
+```
+
+
+## useSecret(xsecret)
+Using a secret by setting its 'used' property to true if it is set to false.
+
+Creating a secret, calling `useSecret(xsecret)` and printing used secret object:
+```javascript
+const secret = pathos.makeSecret();
+console.log("SECRET BUFFER: ", secret)
+
+const secret_obj = pathos.getSecretObj(secret);
+console.log("SECRET OBJECT: ", secret_obj)
+
+const used_secret = pathos.useSecret(secret)
+const usecret_obj = pathos.getSecretObj(used_secret);
+console.log("USED SECRET OBJECT: ", usecret_obj)
+```
+
+Console log:
+```
+SECRET BUFFER:  574e8fee76ba4dc93c2f4cd79399aa01e6cfb19257e4eb305dcfaeb16649b7bf
+SECRET OBJECT:  {
+  register: 'moments/638976edf4684e746f9bd013bd2e9145b1316ee42b40b0877185f6aeda960b8d',
+  author: 'pioneer/ebd4ff7e4f69d1c4c2b529eb60a7ca72bb459c1458e1a011b26b6ea84901d143',
+  used: false,
+  tag: 'secrets/574e8fee76ba4dc93c2f4cd79399aa01e6cfb19257e4eb305dcfaeb16649b7bf'
+}
+USED SECRET OBJECT:  {
+  register: 'moments/638976edf4684e746f9bd013bd2e9145b1316ee42b40b0877185f6aeda960b8d',
+  author: 'pioneer/ebd4ff7e4f69d1c4c2b529eb60a7ca72bb459c1458e1a011b26b6ea84901d143',
+  used: true,
+  tag: 'secrets/574e8fee76ba4dc93c2f4cd79399aa01e6cfb19257e4eb305dcfaeb16649b7bf'
+}
+```
+
