@@ -15,6 +15,7 @@ Recieve data to encode it within pathos file structure and returns the Protocol 
 | makeMoment               | datetime, format, lat, lon, x, y, z     |
 | makePioneer              | birthday, format                        |
 | makeSecret               | author, format                          |
+| makeUser                 | birthday, secret, format                |
 
 
 ## Decoders
@@ -25,6 +26,7 @@ Recieve hashes and returns useful data objects
 | getMomentObj             | xmoment (moment hash)                   |
 | getPioneerObj            | xpioneer (pioneer hash)                 |
 | getSecretObj             | xsecret (secret hash)                   |
+| getUserObj               | xuser (user hash)                   |
 
 
 ## Modifiers
@@ -32,7 +34,7 @@ Modify objects
 
 | Function                 | Parameters                              | Description                                          |
 | ------------------------ | --------------------------------------- | ---------------------------------------------------- |
-| useSecret                | xsecret (secret hash)                   | sets 'used' secret property to true if it is false.  |
+| useSecret                | xsecret (secret hash)                   | Sets 'used' secret property to true if it is false.  |
 
 
 ## Usage
@@ -149,7 +151,7 @@ SECRET OBJECT:  {
 ```
 
 
-## useSecret(xsecret)
+### useSecret(xsecret)
 Using a secret by setting its 'used' property to true if it is set to false.
 
 Creating a secret, calling `useSecret(xsecret)` and printing used secret object:
@@ -184,6 +186,41 @@ USED SECRET OBJECT:  {
   author: 'pioneer/ebd4ff7e4f69d1c4c2b529eb60a7ca72bb459c1458e1a011b26b6ea84901d143',
   used: true,
   tag: 'secrets/574e8fee76ba4dc93c2f4cd79399aa01e6cfb19257e4eb305dcfaeb16649b7bf'
+}
+```
+
+
+### makeUser(birthday, secret, format)
+Making a user involves tracking the user's author by tracking the secret author. Pioneer user is created automatically if it does not exist. We use the user's given birthday as a bigbang moment.
+
+Calling `makeUser()`:
+```javascript
+const user = pathos.makeUser('03 08 2001 05:23:04 GMT-0600', secret);
+console.log("USER BUFFER: ", user)
+```
+
+Console log:
+```
+USER BUFFER:  bd97daa5b9d4490156bfa169c3b15a08b5d43bad0b2206575e4f6330fd5aca6f
+```
+
+
+### getUserObj(xuser)
+Getting a user object by it's hashname
+
+Calling `getUserObj()`:
+```javascript
+const user_obj = pathos.getUserObj(user);
+console.log("USER OBJECT: ", user_obj);
+```
+
+Console log:
+```
+USER OBJECT:  {
+  birthday: 'moments/0d6c319d7c11b457b0163d84d7643352f855e1a34b7f4c24118a4e0178fc7431',
+  register: 'moments/4063001a28bedc82e006585add2f88059c5daa1ef252177a6381e69ed1806108',
+  invite: 'pioneer/ebd4ff7e4f69d1c4c2b529eb60a7ca72bb459c1458e1a011b26b6ea84901d143',
+  tag: 'users/bd97daa5b9d4490156bfa169c3b15a08b5d43bad0b2206575e4f6330fd5aca6f'
 }
 ```
 
