@@ -120,4 +120,39 @@ function getSecretObj(xsecret) {
     return secret_obj;
 }
 
-module.exports = { getCurrentDate, getMomentObj, getPioneerObj, getSecretObj };
+/** getUserObj
+ * [Function that recieves a user hash and returns the user object]
+ * 
+ * @param {string} xuser (required)
+ * 
+ * @return void
+ */
+function getUserObj(xuser) {
+    // "user/hash" FORMAT EXCEPTION
+    if(xuser.split("/").length > 1){ 
+        xuser = xuser.split("/")[1]
+    }
+
+    // LOADING PB
+    var user_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/user.proto'))
+    
+    // NOT FOUND EXCEPTION
+    var fileContents;
+    try {
+        fileContents = fs.readFileSync("files/users/"+xuser);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return "User not found :(";
+        } else {
+            throw err;
+        }
+    }
+
+    // DECODING USER
+    var user_enc = fileContents
+    var user_obj = user_pb.user.decode(user_enc)
+
+    return user_obj;
+}
+
+module.exports = { getCurrentDate, getMomentObj, getPioneerObj, getSecretObj, getUserObj };

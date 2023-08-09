@@ -4,6 +4,7 @@ var dt = require('date-and-time');
 var sha256 = require("js-sha256");
 const getter = require("./getter");
 const checker = require("./checker");
+const { get } = require("http");
 
 /** moment
  * [Moment Protocol Buffer Creation]
@@ -146,5 +147,60 @@ function secret(author = pioneer(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
     return secret_hash;
 }
 
+/** user
+ * [User Protocol Buffer Creation]
+ * 
+ * @param {string} author (optional, default=pioneer_hash)
+ * @param {string} format   (required)
+ * 
+ * @return {string} secret_hash
+ */
+function user(xbirthday, xsecret, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
+    // "secret/hash" FORMAT EXCEPTION
+    if(xsecret.split("/").length > 1){ 
+        xsecret = xsecret.split("/")[1]
+    }
 
-module.exports = { moment, pioneer, secret };
+    checker.checkDir("files/users/");
+    if(checker.checkEmptyDir("files/users/")){
+        return "You need a pioneer's secret to create the first user. There was no pioneer, but don't worry, now there is one at 'files/pioneer/'"+pioneer();
+    }
+    else{
+        if(!checker.isSecretUsed(xsecret)){
+            // CREATING USER
+            console.log("Creating user...")
+            var user = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/user.proto'))
+            
+            var register = new Date()
+            register = dt.format(register, dt.compile(format, true));
+
+            var register_moment = moment(register, format, 0, 0, 0, 0, 0)
+
+            var birthday = dt.parse(xbirthday, format, true);
+            birthday = dt.format(birthday, format, true);
+
+            var birthday_moment = moment(birthday, format, 0, 0, 0, 0, 0)
+            var user_hash = sha256(register_moment + "_" + birthday_moment);
+
+            var invite_user_hash = getter.getSecretObj(xsecret).author;
+
+            var buffer = user.user.encode({
+                birthday: "moments/"+birthday_moment,
+                register: "moments/"+register_moment,
+                invite: invite_user_hash,
+                tag: "users/"+user_hash,
+            })
+
+            checker.checkDir("files/users/") // checking
+            fs.writeFileSync("files/users/" + user_hash, buffer);
+
+            return user_hash
+        }
+        else{
+            return "Secret has been already used!"
+        }
+    }
+}
+
+
+module.exports = { moment, pioneer, secret, user };

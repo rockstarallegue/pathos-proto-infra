@@ -1,5 +1,6 @@
 var fs = require("fs");
 var emptyDir = require('empty-dir');
+var pb = require('protocol-buffers');
 
 // "./files/users"
 
@@ -40,7 +41,38 @@ function checkEmptyDir(dir) {
     return empty_dir
 }
 
+/** isSecretUsed
+ * [Function that returns TRUE if secret has been used, FALSE if not]
+ * 
+ * @param {string} xsecret (required)
+ * 
+ * @return {bool}  used_secret
+ */
+function isSecretUsed(xsecret) {
+    // DECODING SECRET
+    var secret_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/secret.proto'))
+
+    // NOT FOUND EXCEPTION
+    var secret_enc;
+    try {
+        secret_enc = fs.readFileSync("files/secrets/"+xsecret)
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return "Secret not found :(";
+        } else {
+            throw err;
+        }
+    }
+    
+    var secret_obj = secret_pb.secret.decode(secret_enc)
+
+    if(secret_obj.used == false){
+        return false
+    }
+    return true;
+}
+
 // CHECKING THE SECRET CHECKS THE SECRET
 
-module.exports = { checkDir, checkFiles, checkEmptyDir };
+module.exports = { checkDir, checkFiles, checkEmptyDir, isSecretUsed };
                                                                          

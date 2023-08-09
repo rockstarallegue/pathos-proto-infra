@@ -2,6 +2,10 @@ const maker = require("./maker");
 const getter = require("./getter");
 const updater = require("./updater");
 
+//////////////
+///  HELLO  //
+//////////////
+
 /** hello
  * [Function that greets someone who is calling the function]
  * 
@@ -13,6 +17,10 @@ exports.hello = (name = "nameless entity") => {
     var result = "Hello from the Dream Operator's Garage, " + name;
     return result;
 }
+
+///////////////
+///  MOMENT  //
+///////////////
 
 /** makeMoment
  * [Moment maker]
@@ -44,6 +52,10 @@ exports.getMomentObj = (xmoment) => {
     return moment_object;
 }
 
+////////////////
+///  PIONEER  //
+////////////////
+
 /** makePioneer
  * [Pioneer maker]
  * 
@@ -65,6 +77,10 @@ exports.getPioneerObj = (xpioneer) => {
     const pioneer_object = getter.getPioneerObj(xpioneer);
     return pioneer_object;
 }
+
+///////////////
+///  SECRET  //
+///////////////
 
 /** makeSecret
  * [Secret maker]
@@ -96,4 +112,30 @@ exports.useSecret = (xsecret) => {
 exports.getSecretObj = (xsecret) => {
     const secret_object = getter.getSecretObj(xsecret);
     return secret_object;
+}
+
+/////////////
+///  USER  //
+/////////////
+
+/** makeUser
+ * [User maker]
+ * 
+ * @return {string} moment_buffer
+ */
+exports.makeUser = (xbirthday, xsecret, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
+    const user_buffer = maker.user(xbirthday, xsecret, format)
+    return user_buffer
+}
+
+/** getUserObj
+ * [Function that recieves a moment hash and returns the moment object]
+ * 
+ * @param {string} xuser (required)
+ * 
+ * @return {obj} user_object (user object)
+ */
+exports.getUserObj = (xuser) => {
+    const user_object = getter.getUserObj(xuser);
+    return user_object;
 }
