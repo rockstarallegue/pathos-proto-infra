@@ -4,7 +4,7 @@ var dt = require('date-and-time');
 var sha256 = require("js-sha256");
 const getter = require("./getter");
 const checker = require("./checker");
-const { get } = require("http");
+
 
 /** moment
  * [Moment Protocol Buffer Creation]
@@ -202,5 +202,49 @@ function user(xbirthday, xsecret, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
     }
 }
 
+/** node
+ * [Node Protocol Buffer Creation]
+ * 
+ * @param {string} author (optional, default=pioneer_hash)
+ * @param {string} file   (optional)
+ * @param {string} str    (optional)
+ * @param {string} format (required)
+ * 
+ * @return {string} node_hash
+ */
+function node(author = pioneer(), content, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
+    var node_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/node.proto'))
 
-module.exports = { moment, pioneer, secret, user };
+    var register = new Date()
+    register = dt.format(register, dt.compile(format, true));
+
+    var register_moment = moment(register, format, 0, 0, 0, 0, 0)
+    
+    var node_hash = sha256(register_moment + "_" + author);
+    
+    // FILE
+    if(content.split("/").length > 1){ // REPLACE FOR COMPLEX FILE LOCATION IDENTIFIER
+        var buffer = node_pb.node.encode({
+            register: "moments/"+register_moment,
+            author: author,
+            file: content,
+            tag: "nodes/"+node_hash,
+        })
+    }
+    else{
+        var buffer = node_pb.node.encode({
+            register: "moments/"+register_moment,
+            author: author,
+            str: content,
+            tag: "nodes/"+node_hash,
+        })
+    }
+
+    checker.checkDir("files/nodes/") // checking
+    fs.writeFileSync("files/nodes/" + node_hash, buffer);
+    
+    return node_hash;
+}
+
+
+module.exports = { moment, pioneer, secret, user, node };

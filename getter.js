@@ -155,4 +155,39 @@ function getUserObj(xuser) {
     return user_obj;
 }
 
-module.exports = { getCurrentDate, getMomentObj, getPioneerObj, getSecretObj, getUserObj };
+/** getNodeObj
+ * [Function that recieves a node hash and returns the node object]
+ * 
+ * @param {string} xnode (required)
+ * 
+ * @return void
+ */
+function getNodeObj(xnode) {
+    // "node/hash" FORMAT EXCEPTION
+    if(xnode.split("/").length > 1){ 
+        xnode = xnode.split("/")[1]
+    }
+
+    // LOADING PB
+    var node_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/node.proto'))
+    
+    // NOT FOUND EXCEPTION
+    var fileContents;
+    try {
+        fileContents = fs.readFileSync("files/nodes/"+xnode);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return "Node not found :(";
+        } else {
+            throw err;
+        }
+    }
+
+    // DECODING NODE
+    var node_enc = fileContents
+    var node_obj = node_pb.node.decode(node_enc)
+
+    return node_obj;
+}
+
+module.exports = { getCurrentDate, getMomentObj, getPioneerObj, getSecretObj, getUserObj, getNodeObj };

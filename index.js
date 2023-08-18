@@ -2,9 +2,9 @@ const maker = require("./maker");
 const getter = require("./getter");
 const updater = require("./updater");
 
-//////////////
-///  HELLO  //
-//////////////
+///////////////
+///  HELLO  ///
+///////////////
 
 /** hello
  * [Function that greets someone who is calling the function]
@@ -18,9 +18,9 @@ exports.hello = (name = "nameless entity") => {
     return result;
 }
 
-///////////////
-///  MOMENT  //
-///////////////
+////////////////
+///  MOMENT  ///
+////////////////
 
 /** makeMoment
  * [Moment maker]
@@ -52,9 +52,9 @@ exports.getMomentObj = (xmoment) => {
     return moment_object;
 }
 
-////////////////
-///  PIONEER  //
-////////////////
+/////////////////
+///  PIONEER  ///
+/////////////////
 
 /** makePioneer
  * [Pioneer maker]
@@ -78,9 +78,9 @@ exports.getPioneerObj = (xpioneer) => {
     return pioneer_object;
 }
 
-///////////////
-///  SECRET  //
-///////////////
+////////////////
+///  SECRET  ///
+////////////////
 
 /** makeSecret
  * [Secret maker]
@@ -114,9 +114,9 @@ exports.getSecretObj = (xsecret) => {
     return secret_object;
 }
 
-/////////////
-///  USER  //
-/////////////
+//////////////
+///  USER  ///
+//////////////
 
 /** makeUser
  * [User maker]
@@ -138,4 +138,30 @@ exports.makeUser = (xbirthday, xsecret, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') 
 exports.getUserObj = (xuser) => {
     const user_object = getter.getUserObj(xuser);
     return user_object;
+}
+
+//////////////
+///  NODE  ///
+//////////////
+
+/** makeNode
+ * [Node maker]
+ * 
+ * @return {string} node_buffer
+ */
+exports.makeNode = (author = "pioneer/"+maker.pioneer(), content, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
+    const node_buffer = maker.node(author, content, format)
+    return node_buffer
+}
+
+/** getNodeObj
+ * [Function that recieves a moment hash and returns the moment object]
+ * 
+ * @param {string} xnode (required)
+ * 
+ * @return {obj} node_object (user object)
+ */
+exports.getNodeObj = (xnode) => {
+    const node_object = getter.getNodeObj(xnode);
+    return node_object;
 }
