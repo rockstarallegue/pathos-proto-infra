@@ -16,6 +16,7 @@ Recieve data to encode it within pathos file structure and returns the Protocol 
 | makePioneer              | birthday, format                        |
 | makeSecret               | author, format                          |
 | makeUser                 | birthday, secret, format                |
+| makeNode                 | author, file, str, format               |
 
 
 ## Decoders
@@ -26,7 +27,8 @@ Recieve hashes and returns useful data objects
 | getMomentObj             | xmoment (moment hash)                   |
 | getPioneerObj            | xpioneer (pioneer hash)                 |
 | getSecretObj             | xsecret (secret hash)                   |
-| getUserObj               | xuser (user hash)                   |
+| getUserObj               | xuser (user hash)                       |
+| getNodeObj               | xnode (node hash)                       |
 
 
 ## Modifiers
@@ -221,6 +223,42 @@ USER OBJECT:  {
   register: 'moments/4063001a28bedc82e006585add2f88059c5daa1ef252177a6381e69ed1806108',
   invite: 'pioneer/ebd4ff7e4f69d1c4c2b529eb60a7ca72bb459c1458e1a011b26b6ea84901d143',
   tag: 'users/bd97daa5b9d4490156bfa169c3b15a08b5d43bad0b2206575e4f6330fd5aca6f'
+}
+```
+
+
+### makeNode(author, file, str, format)
+Making a node takes an author and content, that can be a file address or a string.
+
+Calling `makeNode()`:
+```javascript
+const node = pathos.makeNode("pioneer/ebd4ff7e4f69d1c4c2b529eb60a7ca72bb459c1458e1a011b26b6ea84901d143", "izipizilemonsquizi");
+console.log("NODE BUFFER: ", node)
+```
+
+Console log:
+```
+NODE BUFFER:  bd97daa5b9d4490156bfa169c3b15a08b5d43bad0b2206575e4f6330fd5aca6f
+```
+
+
+### getNodeObj(xnode)
+Getting a node object by it's hashname
+
+Calling `getNodeObj()`:
+```javascript
+const node_obj = pathos.getNodeObj(node);
+console.log("NODE OBJECT: ", node_obj)
+```
+
+Console log:
+```
+NODE OBJECT:  {
+  register: 'moments/90e7b7a8fe8ff1d198ea2df3a05088550d19104af888073aa35237fb82e98163',
+  author: 'pioneer/ebd4ff7e4f69d1c4c2b529eb60a7ca72bb459c1458e1a011b26b6ea84901d143',
+  file: '',
+  str: 'izipizilemonsquizi',
+  tag: 'secrets/ab99e5cb55a5e32dd2d5385d6cddfb5e6a40845b29e3897a2b93db8d4ee730a9'
 }
 ```
 
