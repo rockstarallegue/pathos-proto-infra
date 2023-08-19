@@ -191,3 +191,30 @@ exports.getPathObj = (xpath) => {
     const path_object = getter.getPathObj(xpath);
     return path_object;
 }
+
+
+/////////////
+///  TAG  ///
+/////////////
+
+/** makeTag
+ * [Tag maker]
+ * 
+ * @return {string} tag_buffer
+ */
+exports.makeTag = (author = "pioneer/"+maker.pioneer(), name, parent, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
+    const tag_buffer = maker.tag(author, name, parent, format)
+    return tag_buffer
+}
+
+/** getTagObj
+ * [Function that recieves a moment hash and returns the moment object]
+ * 
+ * @param {string} xtag (required)
+ * 
+ * @return {obj} tag_object (user object)
+ */
+exports.getTagObj = (xtag) => {
+    const tag_object = getter.getTagObj(xtag);
+    return tag_object;
+}

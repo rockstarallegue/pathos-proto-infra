@@ -226,5 +226,39 @@ function getPathObj(xpath) {
     return path_obj;
 }
 
+/** getTagObj
+ * [Function that recieves a tag hash and returns the tag object]
+ * 
+ * @param {string} xtag (required)
+ * 
+ * @return void
+ */
+function getTagObj(xtag) {
+    // "tag/hash" FORMAT EXCEPTION
+    if(xtag.split("/").length > 1){ 
+        xtag = xtag.split("/")[1]
+    }
 
-module.exports = { getCurrentDate, getMomentObj, getPioneerObj, getSecretObj, getUserObj, getNodeObj, getPathObj };
+    // LOADING PB
+    var tag_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/tag.proto'))
+    
+    // NOT FOUND EXCEPTION
+    var fileContents;
+    try {
+        fileContents = fs.readFileSync("files/tags/"+xtag);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return "Tag not found :(";
+        } else {
+            throw err;
+        }
+    }
+
+    // DECODING TAG
+    var tag_enc = fileContents
+    var tag_obj = tag_pb.tag.decode(tag_enc)
+
+    return tag_obj;
+}
+
+module.exports = { getCurrentDate, getMomentObj, getPioneerObj, getSecretObj, getUserObj, getNodeObj, getPathObj, getTagObj };

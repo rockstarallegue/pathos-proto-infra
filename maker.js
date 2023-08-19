@@ -287,4 +287,42 @@ function path(author = pioneer(), name="", head="", parent="", format = 'MM DD Y
     return "paths/"+path_hash;
 }
 
-module.exports = { moment, pioneer, secret, user, node, path };
+
+/** tag
+ * [Pioneer Protocol Buffer Creation]
+ * 
+ * @param {string} author (optional, default=pioneer_hash)
+ * @param {string} name   (required)
+ * @param {string} parent (optional, default=tag_hash)
+ * @param {string} format (required)
+ * 
+ * @return {string} tag_hash
+ */
+function tag(author = pioneer(), name="", parent="", format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
+    var tag_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/tag.proto'))
+
+    var register = new Date()
+    register = dt.format(register, dt.compile(format, true));
+
+    var register_moment = moment(register, format, 0, 0, 0, 0, 0)
+
+    var tag_hash = sha256(register_moment + "_" + author);
+
+    if(name == ""){ return "The tag has to have name!" }
+    if(parent == ""){ parent = "tags/"+tag_hash; }
+    
+    var buffer = tag_pb.tag.encode({
+        register: "moments/"+register_moment,
+        author: author,
+        name: name,
+        parent: parent,
+        tag: "tags/"+tag_hash,
+    })
+
+    checker.checkDir("files/tags/") // checking
+    fs.writeFileSync("files/tags/" + tag_hash, buffer);
+    
+    return "tags/"+tag_hash;
+}
+
+module.exports = { moment, pioneer, secret, user, node, path, tag };
