@@ -18,6 +18,7 @@ Recieve data to encode it within pathos file structure and returns the Protocol 
 | makeUser                 | birthday, secret, format                |
 | makeNode                 | author, file, str, format               |
 | makePath                 | author, name, head, parent, format      |
+| makeTag                  | author, name, parent, format            |
 
 
 ## Decoders
@@ -31,6 +32,7 @@ Recieve hashes and returns useful data objects
 | getUserObj               | xuser (user hash)                       |
 | getNodeObj               | xnode (node hash)                       |
 | getPathObj               | xpath (path hash)                       |
+| getTagObj                | xptag (tag hash)                        |
 
 
 ## Modifiers
@@ -298,5 +300,41 @@ PATH OBJECT:  {
   head: 'nodes/d7a45fa71467185773e687e279f8dc763748571a5ed0bd6abf08d0895a805a14',
   parent: 'paths/ad6ee3e45a3bfa450d7de201cd354f90a17651e06c1d4b8e9b2b76ae1330c735',
   tag: 'paths/ad6ee3e45a3bfa450d7de201cd354f90a17651e06c1d4b8e9b2b76ae1330c735'
+}
+```
+
+
+### makeTag(author, name, head, parent, format)
+To create a tag, it is necessary to specify the author and the name of the tag. If the tag is under another tag, the parent tag can be specified.
+
+Calling `makeTag()`:
+```javascript
+const tag = pathos.makeTag(user, "word");
+console.log("TAG BUFFER: ", tag)
+```
+
+Console log:
+```
+TAG BUFFER:  tags/86af49e57a415f956d3a9c99708848d0ea575864e790ed8e5e71bfc0e0fb5cd9
+```
+
+
+### getTagObj(xtag)
+Getting a tag object by it's hashname
+
+Calling `getTagObj()`:
+```javascript
+const tag_obj = tagos.getTagObj(tag);
+console.log("PATH OBJECT: ", tag_obj)
+```
+
+Console log:
+```
+TAG OBJECT:  {
+  register: 'moments/9858bb87923ae3e0eaab4479b47cbbf305ad70a8ce3afcd8465c28a7ef9f9e8f',
+  author: 'users/8799224e7192b3c0bf3b75ed211a50e90a23438eec8f718ae197c81a8f4fe001',
+  name: 'word',
+  parent: 'tags/86af49e57a415f956d3a9c99708848d0ea575864e790ed8e5e71bfc0e0fb5cd9',
+  tag: 'tags/86af49e57a415f956d3a9c99708848d0ea575864e790ed8e5e71bfc0e0fb5cd9'
 }
 ```
