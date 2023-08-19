@@ -144,7 +144,7 @@ function secret(author = pioneer(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
     checker.checkDir("files/secrets/") // checking
     fs.writeFileSync("files/secrets/" + secret_hash, buffer);
     
-    return secret_hash;
+    return "secrets/"+secret_hash;
 }
 
 /** user
@@ -194,7 +194,7 @@ function user(xbirthday, xsecret, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
             checker.checkDir("files/users/") // checking
             fs.writeFileSync("files/users/" + user_hash, buffer);
 
-            return user_hash
+            return "users/"+user_hash
         }
         else{
             return "Secret has been already used!"
@@ -243,8 +243,48 @@ function node(author = pioneer(), content, format = 'MM DD YYYY HH:mm:SSS [GMT]Z
     checker.checkDir("files/nodes/") // checking
     fs.writeFileSync("files/nodes/" + node_hash, buffer);
     
-    return node_hash;
+    return "nodes/"+node_hash;
 }
 
 
-module.exports = { moment, pioneer, secret, user, node };
+/** path
+ * [Pioneer Protocol Buffer Creation]
+ * 
+ * @param {string} author (optional, default=pioneer_hash)
+ * @param {string} name   (optional, default=path_hash)
+ * @param {string} head   (required)
+ * @param {string} parent (optional, default=path_hash)
+ * @param {string} format (required)
+ * 
+ * @return {string} path_hash
+ */
+function path(author = pioneer(), name="", head="", parent="", format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
+    var path_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/path.proto'))
+
+    var register = new Date()
+    register = dt.format(register, dt.compile(format, true));
+
+    var register_moment = moment(register, format, 0, 0, 0, 0, 0)
+
+    var path_hash = sha256(register_moment + "_" + author);
+    
+    if(name == ""){ name = path_hash; }
+    if(head == ""){ return "Head node is required to create a path!" }
+    if(parent == ""){ parent = "paths/"+path_hash; }
+
+    var buffer = path_pb.path.encode({
+        register: "moments/"+register_moment,
+        author: author,
+        name: name,
+        head: head,
+        parent: parent,
+        tag: "paths/"+path_hash,
+    })
+
+    checker.checkDir("files/paths/") // checking
+    fs.writeFileSync("files/paths/" + path_hash, buffer);
+    
+    return "paths/"+path_hash;
+}
+
+module.exports = { moment, pioneer, secret, user, node, path };

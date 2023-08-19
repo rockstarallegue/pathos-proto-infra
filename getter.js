@@ -190,4 +190,41 @@ function getNodeObj(xnode) {
     return node_obj;
 }
 
-module.exports = { getCurrentDate, getMomentObj, getPioneerObj, getSecretObj, getUserObj, getNodeObj };
+
+/** getPathObj
+ * [Function that recieves a path hash and returns the path object]
+ * 
+ * @param {string} xpath (required)
+ * 
+ * @return void
+ */
+function getPathObj(xpath) {
+    // "path/hash" FORMAT EXCEPTION
+    if(xpath.split("/").length > 1){ 
+        xpath = xpath.split("/")[1]
+    }
+
+    // LOADING PB
+    var path_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/path.proto'))
+    
+    // NOT FOUND EXCEPTION
+    var fileContents;
+    try {
+        fileContents = fs.readFileSync("files/paths/"+xpath);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return "Path not found :(";
+        } else {
+            throw err;
+        }
+    }
+
+    // DECODING PATH
+    var path_enc = fileContents
+    var path_obj = path_pb.path.decode(path_enc)
+
+    return path_obj;
+}
+
+
+module.exports = { getCurrentDate, getMomentObj, getPioneerObj, getSecretObj, getUserObj, getNodeObj, getPathObj };

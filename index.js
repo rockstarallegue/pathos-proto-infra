@@ -165,3 +165,29 @@ exports.getNodeObj = (xnode) => {
     const node_object = getter.getNodeObj(xnode);
     return node_object;
 }
+
+//////////////
+///  PATH  ///
+//////////////
+
+/** makePath
+ * [Path maker]
+ * 
+ * @return {string} path_buffer
+ */
+exports.makePath = (author = "pioneer/"+maker.pioneer(), name, head, parent, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
+    const path_buffer = maker.path(author, name, head, parent, format)
+    return path_buffer
+}
+
+/** getPathObj
+ * [Function that recieves a moment hash and returns the moment object]
+ * 
+ * @param {string} xpath (required)
+ * 
+ * @return {obj} path_object (user object)
+ */
+exports.getPathObj = (xpath) => {
+    const path_object = getter.getPathObj(xpath);
+    return path_object;
+}
