@@ -17,6 +17,7 @@ Recieve data to encode it within pathos file structure and returns the Protocol 
 | makeSecret               | author, format                          |
 | makeUser                 | birthday, secret, format                |
 | makeNode                 | author, file, str, format               |
+| makePath                 | author, name, head, parent, format      |
 
 
 ## Decoders
@@ -29,6 +30,7 @@ Recieve hashes and returns useful data objects
 | getSecretObj             | xsecret (secret hash)                   |
 | getUserObj               | xuser (user hash)                       |
 | getNodeObj               | xnode (node hash)                       |
+| getPathObj               | xpath (path hash)                       |
 
 
 ## Modifiers
@@ -262,3 +264,39 @@ NODE OBJECT:  {
 }
 ```
 
+
+### makePath(author, name, head, parent, format)
+To create a path, it is necessary to specify the author and the head of the node of the path. The name can be set, but if not, the hash is set as default name. If the path is a branch from another path, the parent path can be specified.
+
+Calling `makePath()`:
+```javascript
+const path = pathos.makePath(user, "elPath", node);
+console.log("PATH BUFFER: ", path)
+```
+
+Console log:
+```
+PATH BUFFER:  paths/ad6ee3e45a3bfa450d7de201cd354f90a17651e06c1d4b8e9b2b76ae1330c735
+```
+
+
+### getPathObj(xpath)
+Getting a path object by it's hashname
+
+Calling `getPathObj()`:
+```javascript
+const path_obj = pathos.getPathObj(path);
+console.log("PATH OBJECT: ", path_obj)
+```
+
+Console log:
+```
+PATH OBJECT:  {
+  register: 'moments/091da3164800c5d08c2efc21abe948c14185d8841a1c82cf6f683dd7c2b5cd02',
+  author: 'users/1249bf6b7d2c33722325b4ec7213577b9d51338f8cbb0c3757583bf2254961d4',
+  name: 'elPath',
+  head: 'nodes/d7a45fa71467185773e687e279f8dc763748571a5ed0bd6abf08d0895a805a14',
+  parent: 'paths/ad6ee3e45a3bfa450d7de201cd354f90a17651e06c1d4b8e9b2b76ae1330c735',
+  tag: 'paths/ad6ee3e45a3bfa450d7de201cd354f90a17651e06c1d4b8e9b2b76ae1330c735'
+}
+```
