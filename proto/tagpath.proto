@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message tagpath {
+    required string register = 1;
+    required string author = 2;
+    required string xtag = 3;
+    required string xpath = 4;
+    required string tag = 5;
+}

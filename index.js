@@ -1,6 +1,7 @@
 const maker = require("./maker");
 const getter = require("./getter");
 const updater = require("./updater");
+const linker = require("./linker");
 
 ///////////////
 ///  HELLO  ///
@@ -73,7 +74,7 @@ exports.makePioneer = (datetime = getter.getCurrentDate(), format = 'MM DD YYYY 
  * 
  * @return {obj} pioneer_object (user object)
  */
-exports.getPioneerObj = (xpioneer) => {
+exports.getPioneerObj = (xpioneer = this.makePioneer()) => {
     const pioneer_object = getter.getPioneerObj(xpioneer);
     return pioneer_object;
 }
@@ -149,8 +150,8 @@ exports.getUserObj = (xuser) => {
  * 
  * @return {string} node_buffer
  */
-exports.makeNode = (author = "pioneer/"+maker.pioneer(), content, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
-    const node_buffer = maker.node(author, content, format)
+exports.makeNode = (author = "pioneer/"+maker.pioneer(), file, text, url, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
+    const node_buffer = maker.node(author, file, text, url, format)
     return node_buffer
 }
 
@@ -192,6 +193,15 @@ exports.getPathObj = (xpath) => {
     return path_object;
 }
 
+/** addPathNode
+ * [Adding node to path node chain]
+ * 
+ * @return {string} path_buffer
+ */
+exports.addPathNode = (xpath, xnode) => {
+    const path_buffer = updater.addPathNode(xpath, xnode)
+    return path_buffer
+}
 
 /////////////
 ///  TAG  ///
@@ -217,4 +227,24 @@ exports.makeTag = (author = "pioneer/"+maker.pioneer(), name, parent, format = '
 exports.getTagObj = (xtag) => {
     const tag_object = getter.getTagObj(xtag);
     return tag_object;
+}
+
+/** linkTagToNode
+ * [Tag to Node link maker]
+ * 
+ * @return {string} tagnode_buffer
+ */
+exports.linkTagToNode = (author = "pioneer/"+maker.pioneer(), xtag, xnode) => {
+    const tag_buffer = linker.TagNode(author, xtag, xnode)
+    return tag_buffer
+}
+
+/** linkTagToPath
+ * [Tag to Path link maker]
+ * 
+ * @return {string} tagpath_buffer
+ */
+exports.linkTagToPath = (author = "pioneer/"+maker.pioneer(), xtag, xpath) => {
+    const tag_buffer = linker.TagPath(author, xtag, xpath)
+    return tag_buffer
 }

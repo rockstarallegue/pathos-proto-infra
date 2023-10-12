@@ -6,5 +6,6 @@ message path {
     required string name = 3;
     required string head = 4;
     required string parent = 5;
-    required string tag = 6;
+    required string chain = 6;
+    required string tag = 7;
 }

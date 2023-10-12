@@ -4,6 +4,7 @@ message node {
     required string register = 1;
     required string author = 2;
     optional string file = 3;
-    optional string str = 4;
-    required string tag = 5;
+    optional string text = 4;
+    optional string url = 5;
+    required string tag = 6;
 }

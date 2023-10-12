@@ -133,6 +133,7 @@ function secret(author = pioneer(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
     // console.log("SECRET REGISTER MOMENT: ", register_moment);
 
     var secret_hash = sha256(register_moment + "_" + author);
+    var author_folder = author.split("/")[1];
     
     var buffer = secret_pb.secret.encode({
         register: "moments/"+register_moment,
@@ -142,7 +143,10 @@ function secret(author = pioneer(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
     })
 
     checker.checkDir("files/secrets/") // checking
+    checker.checkDir("files/"+ author_folder +"/secrets/") // checking
+
     fs.writeFileSync("files/secrets/" + secret_hash, buffer);
+    fs.writeFileSync("files/"+ author_folder +"/secrets/" + secret_hash, buffer);
     
     return "secrets/"+secret_hash;
 }
@@ -168,7 +172,6 @@ function user(xbirthday, xsecret, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
     else{
         if(!checker.isSecretUsed(xsecret)){
             // CREATING USER
-            console.log("Creating user...")
             var user = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/user.proto'))
             
             var register = new Date()
@@ -212,7 +215,7 @@ function user(xbirthday, xsecret, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
  * 
  * @return {string} node_hash
  */
-function node(author = pioneer(), content, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
+function node(author = pioneer(), file, text, url, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
     var node_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/node.proto'))
 
     var register = new Date()
@@ -221,29 +224,21 @@ function node(author = pioneer(), content, format = 'MM DD YYYY HH:mm:SSS [GMT]Z
     var register_moment = moment(register, format, 0, 0, 0, 0, 0)
     
     var node_hash = sha256(register_moment + "_" + author);
+    var author_folder = author.split("/")[1];
     
-    // FILE
-    if(content.split("/").length > 1){ // REPLACE FOR COMPLEX FILE LOCATION IDENTIFIER
-        var buffer = node_pb.node.encode({
-            register: "moments/"+register_moment,
-            author: author,
-            file: content,
-            tag: "nodes/"+node_hash,
-        })
-    }
-    else{
-        var buffer = node_pb.node.encode({
-            register: "moments/"+register_moment,
-            author: author,
-            str: content,
-            tag: "nodes/"+node_hash,
-        })
-    }
+    var buffer = node_pb.node.encode({
+        register: "moments/"+register_moment,
+        author: author,
+        file: file,
+        text: text,
+        url: url,
+        tag: "nodes/"+node_hash,
+    })
 
-    checker.checkDir("files/nodes/") // checking
-    fs.writeFileSync("files/nodes/" + node_hash, buffer);
+    checker.checkDir("files/" + author_folder + "/nodes/") // checking
+    fs.writeFileSync("files/" + author_folder + "/nodes/" + node_hash, buffer);
     
-    return "nodes/"+node_hash;
+    return author_folder + "/nodes/" + node_hash;
 }
 
 
@@ -267,6 +262,7 @@ function path(author = pioneer(), name="", head="", parent="", format = 'MM DD Y
     var register_moment = moment(register, format, 0, 0, 0, 0, 0)
 
     var path_hash = sha256(register_moment + "_" + author);
+    var author_folder = author.split("/")[1];
     
     if(name == ""){ name = path_hash; }
     if(head == ""){ return "Head node is required to create a path!" }
@@ -278,13 +274,14 @@ function path(author = pioneer(), name="", head="", parent="", format = 'MM DD Y
         name: name,
         head: head,
         parent: parent,
+        chain: head.split("/")[1],
         tag: "paths/"+path_hash,
     })
 
-    checker.checkDir("files/paths/") // checking
-    fs.writeFileSync("files/paths/" + path_hash, buffer);
+    checker.checkDir("files/" + author_folder + "/paths/") // checking
+    fs.writeFileSync("files/" + author_folder + "/paths/" + path_hash, buffer);
     
-    return "paths/"+path_hash;
+    return author_folder + "/paths/" + path_hash;
 }
 
 
@@ -307,6 +304,7 @@ function tag(author = pioneer(), name="", parent="", format = 'MM DD YYYY HH:mm:
     var register_moment = moment(register, format, 0, 0, 0, 0, 0)
 
     var tag_hash = sha256(register_moment + "_" + author);
+    var author_folder = author.split("/")[1];
 
     if(name == ""){ return "The tag has to have name!" }
     if(parent == ""){ parent = "tags/"+tag_hash; }
@@ -319,10 +317,10 @@ function tag(author = pioneer(), name="", parent="", format = 'MM DD YYYY HH:mm:
         tag: "tags/"+tag_hash,
     })
 
-    checker.checkDir("files/tags/") // checking
-    fs.writeFileSync("files/tags/" + tag_hash, buffer);
+    checker.checkDir("files/" + author_folder + "/tags/") // checking
+    fs.writeFileSync("files/" + author_folder + "/tags/" + tag_hash, buffer);
     
-    return "tags/"+tag_hash;
+    return author_folder + "/tags/" + tag_hash;
 }
 
 module.exports = { moment, pioneer, secret, user, node, path, tag };
