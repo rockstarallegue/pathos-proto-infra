@@ -15,7 +15,7 @@ Recieve data to encode it within pathos file structure and returns the Protocol 
 | makeMoment               | datetime, format, lat, lon, x, y, z     |
 | makePioneer              | birthday, format                        |
 | makeSecret               | author, format                          |
-| makeUser                 | birthday, secret, format                |
+| makeEntity                 | birthday, secret, format                |
 | makeNode                 | author, file, str, format               |
 | makePath                 | author, name, head, parent, format      |
 | makeTag                  | author, name, parent, format            |
@@ -29,10 +29,11 @@ Recieve hashes and returns useful data objects
 | getMomentObj             | xmoment (moment hash)                   |
 | getPioneerObj            | xpioneer (pioneer hash)                 |
 | getSecretObj             | xsecret (secret hash)                   |
-| getUserObj               | xuser (user hash)                       |
+| getEntityObj               | xuser (user hash)                       |
 | getNodeObj               | xnode (node hash)                       |
 | getPathObj               | xpath (path hash)                       |
-| getTagObj                | xptag (tag hash)                        |
+| getTagObj                | xtag (tag hash)                         |
+| getTagObjFromKey         | xkey (key on the dictionary)            |
 
 
 ## Modifiers
@@ -41,6 +42,22 @@ Modify objects
 | Function                 | Parameters                              | Description                                          |
 | ------------------------ | --------------------------------------- | ---------------------------------------------------- |
 | useSecret                | xsecret (secret hash)                   | Sets 'used' secret property to true if it is false.  |
+
+
+## Dictionary
+The dictionary is the human layer naming tags in order to get them by setting up a unique key
+
+| Function                 | Parameters                              |
+| ------------------------ | --------------------------------------- |
+| makeTagKey               | author, key, xtag, format               |
+
+
+## Publishing
+When author is specified, the nodes, paths, keys and tags are stored in private directions.
+
+| Function                 | Parameters                              |
+| ------------------------ | --------------------------------------- |
+| makePublic               | dir                                     |
 
 
 ## Usage
@@ -116,8 +133,8 @@ Console log:
 PIONEER OBJECT:  {
   birthday: 'moments/1ac234c81ee269e408d7a9e5a7a95492b60883ac53d24d9f11e0903c6ba5f7c6',
   register: 'moments/140ccd369a9d916fb339b09f5b98f84831412a3f520a71002bcb3a66678882a4',
-  invite: 'users/ffe125f1827ca16374ac5ea8d69defeee4b2ff8a9f8d640fa27c495881fe93b4',
-  tag: 'users/ffe125f1827ca16374ac5ea8d69defeee4b2ff8a9f8d640fa27c495881fe93b4'
+  invite: 'entities/ffe125f1827ca16374ac5ea8d69defeee4b2ff8a9f8d640fa27c495881fe93b4',
+  tag: 'entities/ffe125f1827ca16374ac5ea8d69defeee4b2ff8a9f8d640fa27c495881fe93b4'
 }
 ```
 
@@ -196,37 +213,37 @@ USED SECRET OBJECT:  {
 ```
 
 
-### makeUser(birthday, secret, format)
-Making a user involves tracking the user's author by tracking the secret author. Pioneer user is created automatically if it does not exist. We use the user's given birthday as a bigbang moment.
+### makeEntity(secret, format)
+Making an entity involves tracking the entities author by tracking the secret author. Pioneer user is created automatically if it does not exist. We use the entities given birthday as a bigbang moment.
 
-Calling `makeUser()`:
+Calling `makeEntity()`:
 ```javascript
-const user = pathos.makeUser('03 08 2001 05:23:04 GMT-0600', secret);
-console.log("USER BUFFER: ", user)
+const entity = pathos.makeEntity(secret);
+console.log("ENTITY BUFFER: ", entity)
 ```
 
 Console log:
 ```
-USER BUFFER:  bd97daa5b9d4490156bfa169c3b15a08b5d43bad0b2206575e4f6330fd5aca6f
+ENTITY BUFFER:  bd97daa5b9d4490156bfa169c3b15a08b5d43bad0b2206575e4f6330fd5aca6f
 ```
 
 
-### getUserObj(xuser)
-Getting a user object by it's hashname
+### getEntityObj(xentity)
+Getting an entity object by it's hashname
 
-Calling `getUserObj()`:
+Calling `getEntityObj()`:
 ```javascript
-const user_obj = pathos.getUserObj(user);
-console.log("USER OBJECT: ", user_obj);
+const entity_obj = pathos.getEntityObj(entity);
+console.log("ENTITY OBJECT: ", entity_obj);
 ```
 
 Console log:
 ```
-USER OBJECT:  {
+ENTITY OBJECT:  {
   birthday: 'moments/0d6c319d7c11b457b0163d84d7643352f855e1a34b7f4c24118a4e0178fc7431',
   register: 'moments/4063001a28bedc82e006585add2f88059c5daa1ef252177a6381e69ed1806108',
   invite: 'pioneer/ebd4ff7e4f69d1c4c2b529eb60a7ca72bb459c1458e1a011b26b6ea84901d143',
-  tag: 'users/bd97daa5b9d4490156bfa169c3b15a08b5d43bad0b2206575e4f6330fd5aca6f'
+  tag: 'entitys/bd97daa5b9d4490156bfa169c3b15a08b5d43bad0b2206575e4f6330fd5aca6f'
 }
 ```
 
@@ -243,6 +260,12 @@ console.log("NODE BUFFER: ", node)
 Console log:
 ```
 NODE BUFFER:  bd97daa5b9d4490156bfa169c3b15a08b5d43bad0b2206575e4f6330fd5aca6f
+```
+
+If the author is specified, the buffer includes the private direction
+Console log of private node:
+```
+NODE BUFFER:  ebd4ff7e4f69d1c4c2b529eb60a7ca72bb459c1458e1a011b26b6ea84901d143/nodes/2359990a0e4b3a69c057aecefc7a2b288dd80752e635b1afbb83d4f4c1e6d686
 ```
 
 
@@ -272,13 +295,19 @@ To create a path, it is necessary to specify the author and the head of the node
 
 Calling `makePath()`:
 ```javascript
-const path = pathos.makePath(user, "elPath", node);
+const path = pathos.makePath(entity, "elPath", node);
 console.log("PATH BUFFER: ", path)
 ```
 
 Console log:
 ```
 PATH BUFFER:  paths/ad6ee3e45a3bfa450d7de201cd354f90a17651e06c1d4b8e9b2b76ae1330c735
+```
+
+If the author is specified, the buffer includes the private direction
+Console log of private path:
+```
+PATH BUFFER:  ebd4ff7e4f69d1c4c2b529eb60a7ca72bb459c1458e1a011b26b6ea84901d143/paths/2359990a0e4b3a69c057aecefc7a2b288dd80752e635b1afbb83d4f4c1e6d686
 ```
 
 
@@ -295,7 +324,7 @@ Console log:
 ```
 PATH OBJECT:  {
   register: 'moments/091da3164800c5d08c2efc21abe948c14185d8841a1c82cf6f683dd7c2b5cd02',
-  author: 'users/1249bf6b7d2c33722325b4ec7213577b9d51338f8cbb0c3757583bf2254961d4',
+  author: 'entities/1249bf6b7d2c33722325b4ec7213577b9d51338f8cbb0c3757583bf2254961d4',
   name: 'elPath',
   head: 'nodes/d7a45fa71467185773e687e279f8dc763748571a5ed0bd6abf08d0895a805a14',
   parent: 'paths/ad6ee3e45a3bfa450d7de201cd354f90a17651e06c1d4b8e9b2b76ae1330c735',
@@ -318,6 +347,20 @@ Console log:
 TAG BUFFER:  tags/86af49e57a415f956d3a9c99708848d0ea575864e790ed8e5e71bfc0e0fb5cd9
 ```
 
+### makeTagKey(author, key, xtag, format)
+Tag key are the dictionary keys that allow acessing tags from natural language ids. It puts a tag buffer in the dictionary inside a folder with the name of the specified key.
+
+Calling `makeTagKey()`:
+```javascript
+const tag_key = pathos.makeTagKey(user, "word");
+console.log("TAG KEY DIR: ", tag_key)
+```
+
+Console log:
+```
+TAG KEY DIR:  dictionary/word/86af49e57a415f956d3a9c99708848d0ea575864e790ed8e5e71bfc0e0fb5cd9
+```
+
 
 ### getTagObj(xtag)
 Getting a tag object by it's hashname
@@ -332,9 +375,45 @@ Console log:
 ```
 TAG OBJECT:  {
   register: 'moments/9858bb87923ae3e0eaab4479b47cbbf305ad70a8ce3afcd8465c28a7ef9f9e8f',
-  author: 'users/8799224e7192b3c0bf3b75ed211a50e90a23438eec8f718ae197c81a8f4fe001',
+  author: 'entities/8799224e7192b3c0bf3b75ed211a50e90a23438eec8f718ae197c81a8f4fe001',
   name: 'word',
   parent: 'tags/86af49e57a415f956d3a9c99708848d0ea575864e790ed8e5e71bfc0e0fb5cd9',
   tag: 'tags/86af49e57a415f956d3a9c99708848d0ea575864e790ed8e5e71bfc0e0fb5cd9'
 }
+```
+
+### getTagObjFromKey(xkey)
+Getting a tag object by it's key name on the dictionary
+
+Calling `getTagObjFromKey()`:
+```javascript
+const tag_obj = pathos.getTagObjFromKey(xey);
+console.log("TAG OBJECT: ", tag_obj)
+```
+
+Console log:
+```
+TAG OBJECT:  {
+  register: 'moments/9858bb87923ae3e0eaab4479b47cbbf305ad70a8ce3afcd8465c28a7ef9f9e8f',
+  author: 'entities/8799224e7192b3c0bf3b75ed211a50e90a23438eec8f718ae197c81a8f4fe001',
+  name: 'word',
+  parent: 'tags/86af49e57a415f956d3a9c99708848d0ea575864e790ed8e5e71bfc0e0fb5cd9',
+  tag: 'tags/86af49e57a415f956d3a9c99708848d0ea575864e790ed8e5e71bfc0e0fb5cd9'
+}
+```
+
+### makePublic(dir)
+The buffer on the specified directory is made public (it gets to live on the root directory)
+
+Calling `makePublic()`:
+```javascript
+const dir = "46af49e57a415f956d3a9c99708848d0ea575864e790ed8e5e71bfc0e0fb5cd9/paths/ad6ee3e45a3bfa450d7de201cd354f90a17651e06c1d4b8e9b2b76ae1330c735";
+
+const public_buffer = pathos.makePublic(dir);
+console.log("PUBLIC ADDRESS: ", public_buffer)
+```
+
+Console log:
+```
+PUBLIC ADDRESS:  paths/ad6ee3e45a3bfa450d7de201cd354f90a17651e06c1d4b8e9b2b76ae1330c735
 ```
