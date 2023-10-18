@@ -27,7 +27,7 @@ function TagNode(author = pioneer(), xtag="", xnode="", format = 'MM DD YYYY HH:
         fileContents = fs.readFileSync("files/tags/"+xtag);
     } catch (err) {
         if (err.code === 'ENOENT') {
-            return "Tag not found :(";
+            return -1;
         } else {
             throw err;
         }
@@ -43,7 +43,7 @@ function TagNode(author = pioneer(), xtag="", xnode="", format = 'MM DD YYYY HH:
         fileContents = fs.readFileSync("files/nodes/"+xnode);
     } catch (err) {
         if (err.code === 'ENOENT') {
-            return "Node not found :(";
+            return -1;
         } else {
             throw err;
         }
@@ -94,7 +94,7 @@ function TagPath(author = pioneer(), xtag="", xpath="", format = 'MM DD YYYY HH:
         fileContents = fs.readFileSync("files/tags/"+xtag);
     } catch (err) {
         if (err.code === 'ENOENT') {
-            return "Tag not found :(";
+            return -1;
         } else {
             throw err;
         }
@@ -110,7 +110,7 @@ function TagPath(author = pioneer(), xtag="", xpath="", format = 'MM DD YYYY HH:
         fileContents = fs.readFileSync("files/paths/"+xpath);
     } catch (err) {
         if (err.code === 'ENOENT') {
-            return "Path not found :(";
+            return -1;
         } else {
             throw err;
         }

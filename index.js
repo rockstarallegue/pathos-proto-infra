@@ -60,7 +60,7 @@ exports.getMomentObj = (xmoment) => {
 /** makePioneer
  * [Pioneer maker]
  * 
- * @return {string} moment_buffer
+ * @return {string} entity_buffer
  */
 exports.makePioneer = (datetime = getter.getCurrentDate(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
     const pioneer_buffer = maker.pioneer(datetime, format)
@@ -72,7 +72,7 @@ exports.makePioneer = (datetime = getter.getCurrentDate(), format = 'MM DD YYYY 
  * 
  * @param {string} xpioneer (required)
  * 
- * @return {obj} pioneer_object (user object)
+ * @return {obj} pioneer_object (entity object)
  */
 exports.getPioneerObj = (xpioneer = this.makePioneer()) => {
     const pioneer_object = getter.getPioneerObj(xpioneer);
@@ -108,37 +108,37 @@ exports.useSecret = (xsecret) => {
  * 
  * @param {string} xsecret (required)
  * 
- * @return {obj} secret_object (user object)
+ * @return {obj} secret_object (entity object)
  */
 exports.getSecretObj = (xsecret) => {
     const secret_object = getter.getSecretObj(xsecret);
     return secret_object;
 }
 
-//////////////
-///  USER  ///
-//////////////
+////////////////
+///  ENTITY  ///
+////////////////
 
-/** makeUser
- * [User maker]
+/** makeEntity
+ * [Entity maker]
  * 
- * @return {string} moment_buffer
+ * @return {string} entity_buffer
  */
-exports.makeUser = (xbirthday, xsecret, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
-    const user_buffer = maker.user(xbirthday, xsecret, format)
-    return user_buffer
+exports.makeEntity = (xsecret, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
+    const entity_buffer = maker.entity(xsecret, format)
+    return entity_buffer
 }
 
-/** getUserObj
+/** getEntityObj
  * [Function that recieves a moment hash and returns the moment object]
  * 
- * @param {string} xuser (required)
+ * @param {string} xentity (required)
  * 
- * @return {obj} user_object (user object)
+ * @return {obj} entity_object (entity object)
  */
-exports.getUserObj = (xuser) => {
-    const user_object = getter.getUserObj(xuser);
-    return user_object;
+exports.getEntityObj = (xentity) => {
+    const entity_object = getter.getEntityObj(xentity);
+    return entity_object;
 }
 
 //////////////
@@ -160,7 +160,7 @@ exports.makeNode = (author = "pioneer/"+maker.pioneer(), file, text, url, format
  * 
  * @param {string} xnode (required)
  * 
- * @return {obj} node_object (user object)
+ * @return {obj} node_object (entity object)
  */
 exports.getNodeObj = (xnode) => {
     const node_object = getter.getNodeObj(xnode);
@@ -186,7 +186,7 @@ exports.makePath = (author = "pioneer/"+maker.pioneer(), name, head, parent, for
  * 
  * @param {string} xpath (required)
  * 
- * @return {obj} path_object (user object)
+ * @return {obj} path_object (entity object)
  */
 exports.getPathObj = (xpath) => {
     const path_object = getter.getPathObj(xpath);
@@ -201,6 +201,20 @@ exports.getPathObj = (xpath) => {
 exports.addPathNode = (xpath, xnode) => {
     const path_buffer = updater.addPathNode(xpath, xnode)
     return path_buffer
+}
+
+////////////////////
+///  PUBLISHING  ///
+////////////////////
+
+/** makePublic
+ * [Publishing from private dir]
+ * 
+ * @return {string} public dir
+ */
+exports.makePublic = (xdir) => {
+    const public_buffer = maker.public(xdir)
+    return public_buffer
 }
 
 /////////////
@@ -222,15 +236,41 @@ exports.makeTag = (author = "pioneer/"+maker.pioneer(), name, parent, format = '
  * 
  * @param {string} xtag (required)
  * 
- * @return {obj} tag_object (user object)
+ * @return {obj} tag_object (entity object)
  */
 exports.getTagObj = (xtag) => {
     const tag_object = getter.getTagObj(xtag);
     return tag_object;
 }
 
+////////////////
+///  TAG KEY ///
+////////////////
+
+/** makeTag
+ * [Tag maker]
+ * 
+ * @return {string} tag_buffer
+ */
+exports.makeTagKey = (author = "pioneer/"+maker.pioneer(), key, xtag, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') => {
+    const tag_key = maker.tagKey(author, key, xtag, format)
+    return tag_key;
+}
+
+/** getTagFromKey
+ * [Function that recieves a key and returns the tag object belonging to the key on the dictionary]
+ * 
+ * @param {string} xkey (required)
+ * 
+ * @return {obj} tag_object (entity object)
+ */
+exports.getTagObjFromKey = (xkey) => {
+    const tag_object = getter.getTagObjFromKey(xkey);
+    return tag_object;
+}
+
 /** linkTagToNode
- * [Tag to Node link maker]
+ * [Tag-to-Node link maker]
  * 
  * @return {string} tagnode_buffer
  */
@@ -240,7 +280,7 @@ exports.linkTagToNode = (author = "pioneer/"+maker.pioneer(), xtag, xnode) => {
 }
 
 /** linkTagToPath
- * [Tag to Path link maker]
+ * [Tag-to-Path link maker]
  * 
  * @return {string} tagpath_buffer
  */

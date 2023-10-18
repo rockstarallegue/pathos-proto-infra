@@ -55,7 +55,7 @@ function isSecretUsed(xsecret) {
     // NOT FOUND EXCEPTION
     var secret_enc;
     try {
-        secret_enc = fs.readFileSync("files/secrets/"+xsecret)
+        secret_enc = fs.readFileSync("files/"+xsecret)
     } catch (err) {
         if (err.code === 'ENOENT') {
             return "Secret not found :(";

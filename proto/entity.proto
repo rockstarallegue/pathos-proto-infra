@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+message entity {
+    required string register = 1;
+    required string invite = 2;
+    required string tag = 3;
+}

@@ -36,7 +36,7 @@ function getMomentObj(xmoment) {
         fileContents = fs.readFileSync("files/moments/"+xmoment);
     } catch (err) {
         if (err.code === 'ENOENT') {
-            return "Moment not found :(";
+            return -1;
         } else {
             throw err;
         }
@@ -63,7 +63,7 @@ function getPioneerObj(xpioneer) {
     }
 
     // LOADING PB
-    var pioneer_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/user.proto'))
+    var pioneer_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/entity.proto'))
     
     // NOT FOUND EXCEPTION
     var fileContents;
@@ -71,7 +71,7 @@ function getPioneerObj(xpioneer) {
         fileContents = fs.readFileSync("files/pioneer/"+xpioneer);
     } catch (err) {
         if (err.code === 'ENOENT') {
-            return "Pioneer not found :(";
+            return -1;
         } else {
             throw err;
         }
@@ -80,7 +80,7 @@ function getPioneerObj(xpioneer) {
 
     // DECODING PIONEER
     var pioneer_enc = fileContents
-    var pioneer_obj = pioneer_pb.user.decode(pioneer_enc)
+    var pioneer_obj = pioneer_pb.entity.decode(pioneer_enc)
 
     return pioneer_obj;
 }
@@ -94,9 +94,9 @@ function getPioneerObj(xpioneer) {
  */
 function getSecretObj(xsecret) {
     // "secret/hash" FORMAT EXCEPTION
-    if(xsecret.split("/").length > 1){ 
-        xsecret = xsecret.split("/")[1]
-    }
+    /*if(xsecret.split("/").length > 1){ 
+        xsecret = xsecret.split("/")[xsecret.length -1]
+    }*/
 
     // LOADING PB
     var secret_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/secret.proto'))
@@ -104,10 +104,10 @@ function getSecretObj(xsecret) {
     // NOT FOUND EXCEPTION
     var fileContents;
     try {
-        fileContents = fs.readFileSync("files/secrets/"+xsecret);
+        fileContents = fs.readFileSync("files/"+xsecret);
     } catch (err) {
         if (err.code === 'ENOENT') {
-            return "Secret not found :(";
+            return -1;
         } else {
             throw err;
         }
@@ -120,39 +120,39 @@ function getSecretObj(xsecret) {
     return secret_obj;
 }
 
-/** getUserObj
- * [Function that recieves a user hash and returns the user object]
+/** getEntityObj
+ * [Function that recieves a entity hash and returns the entity object]
  * 
- * @param {string} xuser (required)
+ * @param {string} xentity (required)
  * 
  * @return void
  */
-function getUserObj(xuser) {
-    // "user/hash" FORMAT EXCEPTION
-    if(xuser.split("/").length > 1){ 
-        xuser = xuser.split("/")[1]
-    }
+function getEntityObj(xentity) {
+    // "entity/hash" FORMAT EXCEPTION
+    /*if(xentity.split("/").length > 1){ 
+        xentity = xentity.split("/")[xentity.length -1]
+    }*/
 
     // LOADING PB
-    var user_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/user.proto'))
+    var entity_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/entity.proto'))
     
     // NOT FOUND EXCEPTION
     var fileContents;
     try {
-        fileContents = fs.readFileSync("files/users/"+xuser);
+        fileContents = fs.readFileSync("files/"+xentity);
     } catch (err) {
         if (err.code === 'ENOENT') {
-            return "User not found :(";
+            return -1;
         } else {
             throw err;
         }
     }
 
-    // DECODING USER
-    var user_enc = fileContents
-    var user_obj = user_pb.user.decode(user_enc)
+    // DECODING ENTITY
+    var entity_enc = fileContents
+    var entity_obj = entity_pb.entity.decode(entity_enc)
 
-    return user_obj;
+    return entity_obj;
 }
 
 /** getNodeObj
@@ -164,9 +164,9 @@ function getUserObj(xuser) {
  */
 function getNodeObj(xnode) {
     // "node/hash" FORMAT EXCEPTION
-    if(xnode.split("/").length > 1){ 
-        xnode = xnode.split("/")[1]
-    }
+    /*if(xnode.split("/").length > 1){ 
+        xnode = xnode.split("/")[xnode.length -1]
+    }*/
 
     // LOADING PB
     var node_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/node.proto'))
@@ -174,10 +174,10 @@ function getNodeObj(xnode) {
     // NOT FOUND EXCEPTION
     var fileContents;
     try {
-        fileContents = fs.readFileSync("files/nodes/"+xnode);
+        fileContents = fs.readFileSync("files/"+xnode);
     } catch (err) {
         if (err.code === 'ENOENT') {
-            return "Node not found :(";
+            return -1;
         } else {
             throw err;
         }
@@ -200,9 +200,10 @@ function getNodeObj(xnode) {
  */
 function getPathObj(xpath) {
     // "path/hash" FORMAT EXCEPTION
-    if(xpath.split("/").length > 1){ 
-        xpath = xpath.split("/")[1]
-    }
+    /*var splitted_xpath = xpath.split("/");
+    if(splitted_xpath.length > 1){ 
+        xpath = splitted_xpath[splitted_xpath.length -1]
+    }*/
 
     // LOADING PB
     var path_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/path.proto'))
@@ -210,10 +211,10 @@ function getPathObj(xpath) {
     // NOT FOUND EXCEPTION
     var fileContents;
     try {
-        fileContents = fs.readFileSync("files/paths/"+xpath);
+        fileContents = fs.readFileSync("files/"+xpath);
     } catch (err) {
         if (err.code === 'ENOENT') {
-            return "Path not found :(";
+            return -1;
         } else {
             throw err;
         }
@@ -235,9 +236,9 @@ function getPathObj(xpath) {
  */
 function getTagObj(xtag) {
     // "tag/hash" FORMAT EXCEPTION
-    if(xtag.split("/").length > 1){ 
-        xtag = xtag.split("/")[1]
-    }
+    /*if(xtag.split("/").length > 1){ 
+        xtag = xtag.split("/")[xtag.length -1]
+    }*/
 
     // LOADING PB
     var tag_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/tag.proto'))
@@ -245,10 +246,10 @@ function getTagObj(xtag) {
     // NOT FOUND EXCEPTION
     var fileContents;
     try {
-        fileContents = fs.readFileSync("files/tags/"+xtag);
+        fileContents = fs.readFileSync("files/"+xtag);
     } catch (err) {
         if (err.code === 'ENOENT') {
-            return "Tag not found :(";
+            return -1;
         } else {
             throw err;
         }
@@ -261,4 +262,39 @@ function getTagObj(xtag) {
     return tag_obj;
 }
 
-module.exports = { getCurrentDate, getMomentObj, getPioneerObj, getSecretObj, getUserObj, getNodeObj, getPathObj, getTagObj };
+/** getTagObjFromKey
+ * [Function that recieves a tag hash and returns the tag object]
+ * 
+ * @param {string} xkey (required)
+ * 
+ * @return void
+ */
+function getTagObjFromKey(xkey) {
+    // "tag/hash" FORMAT EXCEPTION
+    /*if(xtag.split("/").length > 1){ 
+        xtag = xtag.split("/")[xtag.length -1]
+    }*/
+
+    // LOADING PB
+    var tag_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/tag.proto'))
+    
+    // NOT FOUND EXCEPTION
+    var fileContents;
+    try {
+        fileContents = fs.readFileSync("files/dictionary/"+xkey);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return -1;
+        } else {
+            throw err;
+        }
+    }
+
+    // DECODING TAG
+    var tag_enc = fileContents
+    var tag_obj = tag_pb.tag.decode(tag_enc)
+
+    return tag_obj;
+}
+
+module.exports = { getCurrentDate, getMomentObj, getPioneerObj, getSecretObj, getEntityObj, getNodeObj, getPathObj, getTagObj, getTagObjFromKey };

@@ -69,36 +69,36 @@ function moment(datetime, format, lat, lon, x, y, z) {
  * @return {string} pioneer_buffer
  */
 function pioneer(xbigbang = getter.getCurrentDate(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
-    checker.checkDir("files/users/")
-    if(checker.checkEmptyDir("files/users/")){
+    checker.checkDir("files/entities/")
+    if(checker.checkEmptyDir("files/entities/")){
         // CREATING PIONEER
-        var user = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/user.proto'))
+        var entity = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/entity.proto'))
         
         var register = new Date()
         register = dt.format(register, dt.compile(format, true));
 
-        var register_moment = moment(register, format, 0, 0, 0, 0, 0)
+        var register_moment_hash = moment(register, format, 0, 0, 0, 0, 0)
 
         var birthday = dt.parse(xbigbang, format, true);
         birthday = dt.format(birthday, format, true);
 
         var birthday_moment = moment(birthday, format, 0, 0, 0, 0, 0)
 
-        // console.log("PIONEER REGISTER MOMENT: ", register_moment)
+        // console.log("PIONEER REGISTER MOMENT: ", register_moment_hash)
         // console.log("PIONEER BIRTHDAY MOMENT: ", birthday_moment)
 
-        var pioneer_hash = sha256(register_moment + "_" + birthday_moment);
+        var pioneer_hash = sha256(register_moment_hash + "_" + birthday_moment);
 
-        var buffer = user.user.encode({
+        var buffer = entity.entity.encode({
             birthday: "moments/"+birthday_moment,
-            register: "moments/"+register_moment,
-            invite: "users/"+pioneer_hash, // points to itself as inviting user in the chain
-            tag: "users/"+pioneer_hash,
+            register: "moments/"+register_moment_hash,
+            invite: "entities/"+pioneer_hash, // points to itself as inviting entity in the chain
+            tag: "entities/"+pioneer_hash,
         })
 
-        // Save as active user
-        checker.checkDir("files/users/")
-        fs.writeFileSync("files/users/" + pioneer_hash, buffer);
+        // Save as active entity
+        checker.checkDir("files/entities/")
+        fs.writeFileSync("files/entities/" + pioneer_hash, buffer);
 
         // Save pioneer to look for it later
         checker.checkDir("files/pioneer/")
@@ -121,22 +121,22 @@ function pioneer(xbigbang = getter.getCurrentDate(), format = 'MM DD YYYY HH:mm:
  * 
  * @return {string} secret_hash
  */
-function secret(author = pioneer(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
+function secret(author = "pioneer/"+pioneer(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
     var secret_pb = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/secret.proto'))
 
     var register = new Date()
     register = dt.format(register, dt.compile(format, true));
 
-    var register_moment = moment(register, format, 0, 0, 0, 0, 0)
+    var register_moment_hash = moment(register, format, 0, 0, 0, 0, 0)
     
     // console.log("SECRET AUTHOR: ", author);
-    // console.log("SECRET REGISTER MOMENT: ", register_moment);
+    // console.log("SECRET REGISTER MOMENT: ", register_moment_hash);
 
-    var secret_hash = sha256(register_moment + "_" + author);
+    var secret_hash = sha256(register_moment_hash + "_" + author);
     var author_folder = author.split("/")[1];
     
     var buffer = secret_pb.secret.encode({
-        register: "moments/"+register_moment,
+        register: "moments/"+register_moment_hash,
         author: author,
         used: false,
         tag: "secrets/"+secret_hash,
@@ -151,53 +151,49 @@ function secret(author = pioneer(), format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
     return "secrets/"+secret_hash;
 }
 
-/** user
- * [User Protocol Buffer Creation]
+/** entity
+ * [entity Protocol Buffer Creation]
  * 
  * @param {string} author (optional, default=pioneer_hash)
  * @param {string} format   (required)
  * 
  * @return {string} secret_hash
  */
-function user(xbirthday, xsecret, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
+function entity(xsecret, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
     // "secret/hash" FORMAT EXCEPTION
-    if(xsecret.split("/").length > 1){ 
+    /*if(xsecret.split("/").length > 1){ 
         xsecret = xsecret.split("/")[1]
-    }
+    }*/
 
-    checker.checkDir("files/users/");
-    if(checker.checkEmptyDir("files/users/")){
-        return "You need a pioneer's secret to create the first user. There was no pioneer, but don't worry, now there is one at 'files/pioneer/'"+pioneer();
+    checker.checkDir("files/entities/");
+    if(checker.checkEmptyDir("files/entities/")){
+        return "You need a pioneer's secret to create the first entity. There was no pioneer, but don't worry, now there is one at 'files/pioneer/'"+pioneer();
     }
     else{
         if(!checker.isSecretUsed(xsecret)){
-            // CREATING USER
-            var user = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/user.proto'))
+            // CREATING entity
+            var entity = pb(fs.readFileSync('node_modules/pathos-proto-infra/proto/entity.proto'))
             
             var register = new Date()
             register = dt.format(register, dt.compile(format, true));
 
-            var register_moment = moment(register, format, 0, 0, 0, 0, 0)
+            var register_moment_hash = moment(register, format, 0, 0, 0, 0, 0)
+            var inviting_entity_hash = getter.getSecretObj(xsecret).author;
+            // console.log("-> INVITING ENTITY HASH: ", inviting_entity_hash);
 
-            var birthday = dt.parse(xbirthday, format, true);
-            birthday = dt.format(birthday, format, true);
+            var entity_hash = sha256(register_moment_hash + "_" + inviting_entity_hash);
 
-            var birthday_moment = moment(birthday, format, 0, 0, 0, 0, 0)
-            var user_hash = sha256(register_moment + "_" + birthday_moment);
 
-            var invite_user_hash = getter.getSecretObj(xsecret).author;
-
-            var buffer = user.user.encode({
-                birthday: "moments/"+birthday_moment,
-                register: "moments/"+register_moment,
-                invite: invite_user_hash,
-                tag: "users/"+user_hash,
+            var buffer = entity.entity.encode({
+                register: "moments/"+register_moment_hash,
+                invite: inviting_entity_hash,
+                tag: "entities/"+entity_hash,
             })
 
-            checker.checkDir("files/users/") // checking
-            fs.writeFileSync("files/users/" + user_hash, buffer);
+            checker.checkDir("files/entities/") // checking
+            fs.writeFileSync("files/entities/" + entity_hash, buffer);
 
-            return "users/"+user_hash
+            return "entities/"+entity_hash
         }
         else{
             return "Secret has been already used!"
@@ -221,13 +217,13 @@ function node(author = pioneer(), file, text, url, format = 'MM DD YYYY HH:mm:SS
     var register = new Date()
     register = dt.format(register, dt.compile(format, true));
 
-    var register_moment = moment(register, format, 0, 0, 0, 0, 0)
+    var register_moment_hash = moment(register, format, 0, 0, 0, 0, 0)
     
-    var node_hash = sha256(register_moment + "_" + author);
+    var node_hash = sha256(register_moment_hash + "_" + author);
     var author_folder = author.split("/")[1];
     
     var buffer = node_pb.node.encode({
-        register: "moments/"+register_moment,
+        register: "moments/"+register_moment_hash,
         author: author,
         file: file,
         text: text,
@@ -259,9 +255,9 @@ function path(author = pioneer(), name="", head="", parent="", format = 'MM DD Y
     var register = new Date()
     register = dt.format(register, dt.compile(format, true));
 
-    var register_moment = moment(register, format, 0, 0, 0, 0, 0)
+    var register_moment_hash = moment(register, format, 0, 0, 0, 0, 0)
 
-    var path_hash = sha256(register_moment + "_" + author);
+    var path_hash = sha256(register_moment_hash + "_" + author);
     var author_folder = author.split("/")[1];
     
     if(name == ""){ name = path_hash; }
@@ -269,7 +265,7 @@ function path(author = pioneer(), name="", head="", parent="", format = 'MM DD Y
     if(parent == ""){ parent = "paths/"+path_hash; }
 
     var buffer = path_pb.path.encode({
-        register: "moments/"+register_moment,
+        register: "moments/"+register_moment_hash,
         author: author,
         name: name,
         head: head,
@@ -301,16 +297,16 @@ function tag(author = pioneer(), name="", parent="", format = 'MM DD YYYY HH:mm:
     var register = new Date()
     register = dt.format(register, dt.compile(format, true));
 
-    var register_moment = moment(register, format, 0, 0, 0, 0, 0)
+    var register_moment_hash = moment(register, format, 0, 0, 0, 0, 0)
 
-    var tag_hash = sha256(register_moment + "_" + author);
+    var tag_hash = sha256(register_moment_hash + "_" + author);
     var author_folder = author.split("/")[1];
 
     if(name == ""){ return "The tag has to have name!" }
     if(parent == ""){ parent = "tags/"+tag_hash; }
     
     var buffer = tag_pb.tag.encode({
-        register: "moments/"+register_moment,
+        register: "moments/"+register_moment_hash,
         author: author,
         name: name,
         parent: parent,
@@ -323,4 +319,67 @@ function tag(author = pioneer(), name="", parent="", format = 'MM DD YYYY HH:mm:
     return author_folder + "/tags/" + tag_hash;
 }
 
-module.exports = { moment, pioneer, secret, user, node, path, tag };
+/** tag
+ * [Pioneer Protocol Buffer Creation]
+ * 
+ * @param {string} author (optional, default=pioneer_hash)
+ * @param {string} key   (required)
+ * @param {string} xtag   (required)
+ * @param {string} format (required)
+ * 
+ * @return {string} tag_hash
+ */
+function tagKey(author = pioneer(), key="", xtag, format = 'MM DD YYYY HH:mm:SSS [GMT]Z') {
+
+    var author_folder = author.split("/")[1];
+
+    // NOT FOUND EXCEPTION
+    var fileContents;
+    try {
+        fileContents = fs.readFileSync("files/"+xtag);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return -1;
+        } else {
+            throw err;
+        }
+    }
+
+    checker.checkDir("files/" + author_folder + "/dictionary/") // checking
+    fs.writeFileSync("files/" + author_folder + "/dictionary/" + key, fileContents);
+    
+    return author_folder + "/dictionary/" + key;
+}
+
+/** public
+ * [Make file public]
+ * 
+ * @param {string} xdir (dir)
+ * 
+ * @return {string} node_hash
+ */
+function public(xdir) {
+    
+    var splitted_dir = xdir.split("/");
+    
+    // NOT FOUND EXCEPTION
+    var fileContents;
+    try {
+        fileContents = fs.readFileSync("files/" + xdir);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return xdir+" Not found :c";
+        } else {
+            throw err;
+        }
+    }
+
+    var dir = splitted_dir[splitted_dir.length - 2] + "/";
+    checker.checkDir("files/" + dir + "/") // checking
+    fs.writeFileSync("files/" + dir + splitted_dir[splitted_dir.length - 1], fileContents);
+    
+    return dir + splitted_dir[splitted_dir.length - 1];
+    
+}
+
+module.exports = { moment, pioneer, secret, entity, node, path, tag, tagKey, public };
